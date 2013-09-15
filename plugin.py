@@ -28,6 +28,7 @@
 
 ###
 
+import supybot.ircdb as ircdb
 import supybot.callbacks as callbacks
 
 
@@ -37,6 +38,9 @@ class IgnoreUnknownPrivateMessages(callbacks.Plugin):
 
     def inFilter(self, irc, msg):
         if msg.command == 'PRIVMSG' and not irc.isChannel(msg.args[0]):
+            # Always allow the owner to talk to the bot
+            if ircdb.checkCapability(msg.prefix, 'owner'):
+                return msg
             for chan in irc.state.channels:
                 # Recognize the nick, we can accept the msg
                 if msg.nick in irc.state.channels[chan].users:
