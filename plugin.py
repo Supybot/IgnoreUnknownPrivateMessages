@@ -33,13 +33,13 @@ import supybot.callbacks as callbacks
 
 
 class IgnoreUnknownPrivateMessages(callbacks.Plugin):
-    """When this plugin is loaded, private messages from users are ignored
-    unless the user is also in a channel with the bot."""
+    """When this plugin is loaded, private messages from unknown users are
+    ignored unless the user is also in a channel with the bot."""
 
     def inFilter(self, irc, msg):
         if msg.command == 'PRIVMSG' and not irc.isChannel(msg.args[0]):
-            # Always allow the owner to talk to the bot
-            if ircdb.checkCapability(msg.prefix, 'owner'):
+            # Allow registered users to converse with the bot
+            if ircdb.users.hasUser(msg.prefix):
                 return msg
             for chan in irc.state.channels:
                 # Recognize the nick, we can accept the msg
